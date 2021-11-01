@@ -3,8 +3,8 @@
 #+title:Deploy a Hugo Website with Cloud Build and Firebase Pipeline
 #+subtitle:{{{version}}} {{{date}}}
 #+author:LOLH
-#+date:2021-10-29 18:58
-#+macro:version Version 0.0.1
+#+date:2021-10-31 22:20
+#+macro:version Version 0.0.2
 #+macro:upload-date (eval (current-time-string))
 #+bucket:pinecone-forest.com
 
@@ -13,19 +13,25 @@
 #+texinfo:@insertcopying
 
 
-* Deploy
+* Deploy a Hugo Website with Cloud Build and Firebase Pipeline
 :PROPERTIES:
-:unnumbered: t
+:CUSTOM_ID: GSP747
 :END:
-Google Cloud Self-Paced Labs---GSP747
+- https://googlecoursera.qwiklabs.com/focuses/18470069?parent=lti_session
+
 ** Overview
 In this lab you will:
+
 - create a  pipeline for  deploying websites  based on  Hugo, a  static website
   builder.
+
 - You will store the website content in Cloud Source Repositories and
+
 - deploy the website with Firebase,
+
 - then use Cloud Build to create a pipeline to automatically deploy new content
   that is committed to the repository.
+
 ** Objectives
 In this lab you will learn the following:
 
@@ -46,11 +52,13 @@ services you will be using.
 
 Here are some other labs you may find helpful:
 
-- Cloud Source Repositories: Qwik Start
-- Build a Serverless App with Cloud Run that Creates PDF Files
-- Firebase Web
+- [[#GSP121][Cloud Source Repositories: Qwik Start]]
+- [[#GSP644][Build a Serverless App with Cloud Run that Creates PDF Files]]
+- [[#GSP065][Firebase Web]]
 
 ** The Benefits of Static Websites
+
+#+cindex:static site builders
 *Static site builders* like _Hugo_ have become popular because of their ability
 to produce websites that /do not require web servers/.
 
@@ -60,11 +68,15 @@ to produce websites that /do not require web servers/.
 - There are, however, various operational considerations.
 
   - For example, you  may want to version control your  postings,
-
-  - host your web  site on a content delivery network  ("CDN") and
-
+    #+cindex:content delivery network (CDN)
+    #+cindex:CDN, content delivery network
+  - host your web site on a *content delivery network* ("CDN") and
+    #+cindex:ssl certificate
   - provision an SSL certificate.
 
+    #+cindex:continuous integration
+    #+cindex:continuous deployment
+    #+cindex:pipeline
 You can  address these  needs by  using a  *Continuous Integration  /
 Continuous Deployment pipeline* on  Google Cloud.
 
@@ -90,31 +102,36 @@ To complete this lab, you need:
 - Access to a standard internet browser (Chrome browser recommended).
 - Time to complete the lab.
 
+*Note:* If you already have your  own personal Google Cloud account or project,
+do not use it for this lab.
+
 *Note:* If you  are using a Chrome  OS device, open an Incognito  window to run
 this lab.
 
 *** How to start your lab and sign in to the Google Cloud Console
+
+#+cindex:credentials, temporary
 1. Click  the =Start Lab=  button.  If you  need to pay  for the lab,  a pop-up
-   opens  for you  to  select your  payment  method.  On the  left  is a  panel
-   populated with the temporary credentials that you must use for this lab.
+   opens  for you  to select  your  payment method.   On  the left  is a  panel
+   populated with the *temporary credentials* that you must use for this lab.
 
    [[../resources/images/-tHp4GI5VSDyTtdqi3qDFtevuY014F88+Fow-adnRgE=.png]]
 
-2. Copy  the username,  and then click  Open Google Console.  The lab  spins up
-   resources, and then opens another tab that shows the Sign in page.
+2. Copy the username,  and then click =Open Google Console=.   The lab spins up
+   resources, and then opens another tab that shows the =Sign in= page.
 
    [[../resources/images/VkUIAFY2xX3zoHgmWqYKccRLwFrR4BfARLd5ojmlbhs=.png]]
 
-   ,*Tip:* Open the tabs in separate windows, side-by-side.
+   *Tip:* Open the tabs in separate windows, side-by-side.
 
-   If you see the Choose an account page, click Use Another Account.
+   If you see the =Choose an account= page, click =Use Another Account=.
 
    [[../resources/images/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw=.png]]
 
 3.  In  the *Sign in* page,  paste the username  that you copied from  the left
    panel. Then copy and paste the password.
 
-   *Important:* You  must use the credentials  from the left panel.  Do not use
+   *Important:* You must use the credentials  from the left panel.  Do not use
    your Google Cloud  Training credentials.  If you have your  own Google Cloud
    account, do not use it for this lab (avoids incurring charges).
 
@@ -127,7 +144,7 @@ this lab.
 
    After a few moments, the Cloud Console opens in this tab.
 
-   *Note:* You  can view  the menu  with a  list of  Google Cloud  Products and
+   *Note:* You  can view  the menu with  a list of  Google Cloud  Products and
    Services by clicking the Navigation menu at the top-left.
 
    [[../resources/images/9vT7xPlxoNP-PsK0J8j0ZPFB4HnnpaIJVCDByaBrSHg=.png]]
@@ -137,13 +154,14 @@ Here's a diagram of what you are going to build:
 
 [[../resources/images/j0UawtzBJczZe32K8wKYpiVTkIQyKSFMBfyALUzMn+I=.png]]
 
+#+cindex:pipeline
 The goal is  to be able to commit  code and have it trigger  the pipeline which
 will in turn deploy the website.  Your  journey will be divided into two parts.
 
-1. First, you will build the website locally and deploy it to Firebase manually
-   so you can gain an understanding of  the entire process.
+1.  First, you  will *build  the  website locally*  and deploy  it to  Firebase
+   manually so you can gain an understanding of the entire process.
 
-2. Second,  you will  automate the  process by building  a pipeline  with Cloud
+2. Second,  you will *automate the  process* by building a  pipeline with Cloud
    Build.
 
 ** Manual Deployment
@@ -152,19 +170,341 @@ process.  You will also use the Linux  instance to perform some of the one-time
 tasks that are needed to get Firebase up and running.
 
 *** Connect to the Linux instance
+1. From  the navigation menu select  *Compute Engine > VM  Instances*. You will
+   see one instance that has been built for you.
+
+2. At  the end of  the line you  should see an External  IP address and  an SSH
+   button as shown in the figure below. If these are obscured by an information
+   panel, close that panel so you can see the entire line.
+
+   [[file:../resources/images/m+Kk3gckmiT-sXRorACHbhxmjyMqFcSM8+2KmaBvPVs=.png]]
+
+3. Make a note of the External IP address for later use.
+
+4. Click =SSH=.  A window will appear and you will see a shell prompt.
 
 *** Install Hugo locally
+Now install Hugo locally in the Linux instance so that you can test the website
+locally before deploying it with Firebase.  A shell script has been provided to
+make this easier.
+
+1. In  the Linux instance shell,  examine the file ~installhugo.sh~  by running
+   ~cat /tmp/installhugo.sh~. You can also see the contents below:
+
+#+findex:installhugo.sh
+#+caption: Install Hugu Shell Script
+#+name: installhugo.sh
+#+begin_src sh
+  #!/bin/bash
+  # Copyright 2020 Google Inc. All rights reserved.
+  #
+  # Licensed under the Apache License, Version 2.0 (the "License");
+  # you may not use this file except in compliance with the License.
+  # You may obtain a copy of the License at
+  #
+  #     http://www.apache.org/licenses/LICENSE-2.0
+  #
+  # Unless required by applicable law or agreed to in writing, software
+  # distributed under the License is distributed on an "AS IS" BASIS,
+  # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  # See the License for the specific language governing permissions and
+  # limitations under the License.
+  _HUGO_VERSION=0.69.2
+  echo Downloading Hugo version $_HUGO_VERSION...
+  wget \
+    --quiet \
+    -O hugo.tar.gz \
+    https://github.com/gohugoio/hugo/releases/download/v${_HUGO_VERSION}/hugo_extended_${_HUGO_VERSION}_Linux-64bit.tar.gz
+  echo Extracting Hugo files into /tmp...
+  mv hugo.tar.gz /tmp
+  tar -C /tmp -xzf /tmp/hugo.tar.gz
+  echo The Hugo binary is now at /tmp/hugo.
+#+end_src
+
+2. [@2]Note  the use  of the  ~wget~ command  to download  Hugo and  the ~tar~
+  command to unpack the Hugo archive.   You will see similar commands later in
+  this lab when you create the pipeline.
+
+3. Enter the commands below to run the script and install Hugo:
+
+: cd ~
+: /tmp/installhugo.sh
+
+You will receive a message saying that  Hugo has been installed into the ~/tmp~
+directory as shown below.  You are ready to build the website infrastructure.
+
+[[file:../resources/images/buO1W3FIuVRjQaEsyrepa9J+JqixRptP1GuVp+GQ-wg=.png]]
 
 *** Create a repository and the initial web site
 
+#+cindex:Cloud Source Repository
+Now create a *Cloud Source Repository* to  hold the web site and then clone the
+repository to the Linux instance.  Cloning  a repository creates a mirror of it
+in the shell.  This allows you to implement the web site while in the shell and
+later commit your changes to the file  system.  Later in this lab, you will set
+up a pipeline that responds to these commits to the repository.
+
+1. Enter the following commands in the Linux instance shell:
+
+#+begin_src sh
+cd ~
+gcloud source repos create my_hugo_site
+gcloud source repos clone my_hugo_site
+#+end_src
+
+You will  receive confirmations about  the creation  of the repository  and the
+cloning of the repository as shown in the figure below.  You can ignore the two
+warning messages about the charge for the repository and that the repository is
+empty.
+
+[[file:../resources/images/6Xp6TnJjneDe6pW6IjtEYYz5+Fh8GZ-ezG8mJC37CUw=.png]]
+
+Click =Check my progress= to verify the objective.
+
+2. [@2]Now  you are  ready to  create the site  structure.  Enter  the commands
+   below in the Linux shell.
+
+: cd ~
+: /tmp/hugo new site my_hugo_site --force
+
+Normally the ~hugo~ command creates the directory.  The ~--force~ option will
+create the site in the repository directory, which already exists.  This allows
+you to keep the Git-related information in the directory that you just cloned.
+You will see messages indicating that the site has been created as shown in the
+figure below.
+
+[[file:../resources/images/44IDjiRjRFJhaNI9hpuTrTEUj40jAY4h6rpe5d9JUy8=.png]]
+
+3. [@3]Now install the  Ananke theme to provide a layout  for your site.  Enter
+   the following commands in the Linux instance shell:
+
+   #+begin_src sh
+   cd ~/my_hugo_site
+   git submodule add \
+     https://github.com/budparr/gohugo-theme-ananke.git \
+     themes/ananke
+   echo 'theme = "ananke"' >> config.toml
+   #+end_src
+
+   You will  see messages indicating that  the theme has been  cloned, as shown
+   below.
+
+   [[file:../resources/images/iYg2p-0+z4Vfpl2aqdojAlxQHJx1c3nVMsdHczChPVo=.png]]
+
+4. [@4]With  the structure  of the  web site set  up, you  can now  preview it.
+   Enter the command below to launch the site at TCP port 8080:
+
+   : cd ~/my_hugo_site
+   : /tmp/hugo server -D --bind 0.0.0.0 --port 8080
+
+   Hugo will build the  site and serve it for access on TCP  port 8080 as shown
+   in the figure  below.  The server will  run until it is  stopped by pressing
+   =Ctrl+C=.
+
+   [[file:../resources/images/1A3uN+W8FrMEnQ7S-VX-ZroU9czLv1Z7AV+-3HS71ME=.png]]
+
+5.  [@5]Open a browser tab and browse  to the external IP address at port 8080.
+   Use the following URL, replacing [EXTERNAL  IP] with the external IP address
+   of your instance:
+
+   : http://[EXTERNAL IP]:8080
+
+   The web site should look like this.
+
+   [[file:../resources/images/iGCS5ksMweWQdrBe9CzcnANJg42pSIiaABQsbNK-MW4=.png]]
+
+   Click =Check my progress= to verify the objective.
+
+6. [@6]Go back to the Linux shell and press =Ctrl+C= to stop the Hugo server.
+
 *** Add Firebase to your project
+Now  that you  know what  the website  looks like,  it's time  to deploy  it to
+Firebase.  First enable Firebase within your existing project.
+
+#+cindex:Firebase console
+1. Open  a new  tab in your  browser then  open this  [[https://console.firebase.google.com/][link]] in it  to go  to the
+   Firebase console.
+
+   Now  click =Add  project=.  You  will be  asked to  select a  name for  your
+   project.  Click  inside of the  name field  and select your  existing Google
+   Cloud project  that starts  with "qwiklabs-gcp-..." as  shown in  the figure
+   below:
+
+   [[file:../resources/images/68ovTX3M+k+Uyqq4+dLY2ugDUsW1Lumcg2buOFhUFWs=.png]]
+
+2. Accept the Firebase terms, then click Continue.
+
+3. You may be  asked to confirm the Firebase billing  plan.  The Firebase costs
+   are included with the lab. If you are prompted, click =Confirm plan=.
+
+4. You will be  asked to acknowledge some of the  criteria when adding Firebase
+   to a project. Click =Continue=.
+
+5. You will be  asked to confirm the use of Google  Analytics for this Firebase
+   project.  Since this is a lab  environment, use the toggle to disable Google
+   Analytics  and click  Add  Firebase.   It will  take  about  one minute  for
+   Firebase to be added to the project.
+
+6. Click =Continue= if prompted after Firebase is added.
 
 *** Deploy the site to Firebase
 
+#+cindex:Fireball
+1. Install Fireball CLI in the Linux instance shell:
+
+   : curl -sL https://firebase.tools | bash
+
+2. Now you need to initialize Firebase. Enter the command below into the shell:
+
+   : cd ~/my_hugo_site
+   : firebase init
+
+3. Select  *Hosting* using  the arrow  keys and spacebar.   When asked  for a
+ project option, select  =Use an existing project=, then use  the arrow keys,
+ spacebar, and  the Enter key  to select the Project  ID provided on  the lab
+ instruction  page.   For the  public  directory,  select the  default  value
+ public.  For  configuring as a  single page application, select  the default
+ value of  =N=.  For  setting up  automatic builds  and deploys  with GitHub,
+ select =N=.
+
+ If asked to overwrite any existing files, select =Y=.
+
+4. You are ready to deploy the  application.  Enter the commands below into the
+   Linux instance  shell to rebuild  the site with Hugo  and to deploy  it with
+   Firebase:
+
+   : /tmp/hugo && firebase deploy
+
+5.  After  the application has been  deployed, you will receive  a hosting URL.
+   Click on it and you will see the same website being served from the Firebase
+   CDN (content delivery network).  If you receive a generic "welcome" message,
+   wait a  few minutes for  the CDN to be  initialized and refresh  the browser
+   window.  Save this hosting URL for later use.
+
+You  have now  performed  the  entire deployment  locally.  Next, automate  the
+process from end to end using Cloud Build.
+
+*** Automate the Deployment
+
 ** Automate the Deployment
 
-* Chapter
-
+*** Perform the Initial Commit
+
+*** Configure the Build
+
+*** Create the Cloud Build Trigger
+
+*** Update the Cloud Build service account
+
+** Congratulations
+
+*** Finish the Quest
+
+*** Take the Next Lab
+
+* Cloud Source Repositories---Qwik Start
+:PROPERTIES:
+:CUSTOM_ID: GSP121
+:END:
+- https://www.cloudskillsboost.google/focuses/1002?parent=catalog
+
+** Overview
+[[https://cloud.google.com/source-repositories/][Google  Cloud  Source Repositories]]  provides  Git  version control  to  support
+collaborative development of any application or  service. 
+
+In this  lab, you  will
+- create a  local Git repository  that contains  a sample file,
+- add a Google Source Repository as  a remote, and
+- push the contents of the local  repository.
+- You will use the source browser  included in Source Repositories to view your
+  repository files from within the Cloud Console.
+
+** Setup and Requirements
+
+** Create a new repository
+
+** Clone the new repository into your Cloud Shell session
+
+** Push to the Cloud Source Repository
+
+** Browse files in the Google Cloud Source repository
+
+** View a file in the Google Cloud repository
+
+** Test your Understanding
+
+** Congratulations!
+
+* Build a Serverless App with Cloud Run that Creates PDF Files
+:PROPERTIES:
+:CUSTOM_ID: GSP644
+:END:
+- https://www.cloudskillsboost.google/focuses/8390?parent=catalog
+
+** Overview
+
+** Setup and Requirements
+
+** Understanding the task
+
+** Enable the Cloud Run API
+
+** Deploy a simple Cloud Run service
+
+** Trigger your Cloud Run service when a new file is uploaded
+
+** See if the Cloud Run service is triggered when files are uploaded to Cloud Storage
+
+** Docker containers
+
+** Testing the pdf-conversion service
+
+** Congratulations!
+
+* Firebase Web
+:PROPERTIES:
+:CUSTOM_ID: GSP065
+:END:
+- https://www.cloudskillsboost.google/focuses/660?parent=catalog
+
+** Overview
+
+** Setup and requirements
+
+** Get the sample code
+
+** View the starter application
+
+** Set up your Firebase project
+
+** Enable Firebase on your project
+
+** Add a Firebase web app
+
+** Install the Firebase command line interface
+
+** Deploy and run the starter app
+
+** Import and Configure Firebase
+
+** Set up user sign in
+
+** Write messages to Cloud Firestore
+
+** Read messages
+
+** Send Images
+
+** Show Notifications
+
+** Cloud Firestore security rules (optional)
+
+** Cloud Storage security rules (optional)
+
+** Deploy your app using Firebase Hosting
+
+** Congratulations!
+
 * Build Tools
 :PROPERTIES:
 :appendix: t
