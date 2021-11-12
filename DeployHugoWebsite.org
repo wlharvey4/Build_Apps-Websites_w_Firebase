@@ -1,10 +1,10 @@
 # -*- mode:org; -*-
 
-#+title:Deploy a Hugo Website with Cloud Build and Firebase Pipeline
+#+title:Build Apps & Websites with Firebase
 #+subtitle:{{{version}}} {{{date}}}
 #+author:LOLH
-#+date:2021-10-31 22:48
-#+macro:version Version 0.0.3
+#+date:2021-11-12 08:20
+#+macro:version Version 0.1.1
 #+macro:upload-date (eval (current-time-string))
 #+bucket:pinecone-forest.com
 
@@ -16,10 +16,10 @@
 * Deploy a Hugo Website with Cloud Build and Firebase Pipeline
 :PROPERTIES:
 :CUSTOM_ID: GSP747
+:INSTRUCTOR: Google Cloud Training
 :END:
 - https://googlecoursera.qwiklabs.com/focuses/18470069?parent=lti_session
 
-** Overview
 In this lab you will:
 
 - create a  pipeline for  deploying websites  based on  Hugo, a  static website
@@ -32,7 +32,8 @@ In this lab you will:
 - then use Cloud Build to create a pipeline to automatically deploy new content
   that is committed to the repository.
 
-** Objectives
+** About the Course---Overview
+*** Objectives and Skills
 In this lab you will learn the following:
 
 - An overview of static websites
@@ -45,7 +46,14 @@ In this lab you will learn the following:
 
 - Creating a build pipeline with Cloud Build to automate the deployment
 
-** Prerequisites
+
+The skills you will gain include:
+
+- Deploying Hugo Websites
+- Serverless Applications
+- Firebase
+
+*** Prerequisites
 The  instructions  provided here  are  sufficient  to  guide you  through  this
 lab. You  may also find  it helpful to have  some hands-on experience  with the
 services you will be using.
@@ -56,7 +64,55 @@ Here are some other labs you may find helpful:
 - [[#GSP644][Build a Serverless App with Cloud Run that Creates PDF Files]]
 - [[#GSP065][Firebase Web]]
 
-** The Benefits of Static Websites
+*** Self-Paced Lab
+Welcome to  *Deploy a Hugo Website  with Cloud Build and  Firebase Pipeline*, a
+lab-based  project. Before  diving into  the  lab, please  take a  look at  the
+objectives and structure.
+
+**** Objectives
+A  Self-Paced  Lab is  an  online  learning environment  along  with  a set  of
+instructions to  walk you  through a live,  real-world, and  scenario-based use
+case.  In a  lab, you have access  to the actual environment you  want to learn
+about, not a simulation or demo environment. You can access the lab environment
+from anywhere on the Internet using a standard browser.
+
+**** Project Structure
+This lab-based project is divided into 2 main parts:
+
+1. Lab Overview: This introductory reading item.
+
+2.  *Self-Paced Lab:  Deploy  a  Hugo Website  with  Cloud  Build and  Firebase
+   Pipeline*. This  is the hands-on  lab that we will  work on in  the Qwiklabs
+   platform.
+
+**** Lab Structure
+Each  lab has  a  unique set  of  activities  and goals.  Please  refer to  the
+instructions and tips in the lab to ensure you're able to successfully complete
+it.
+
+**** About Google Cloud Self-Paced Labs
+This  Self-Paced   Lab  runs  on   Google  Cloud's  hands-on   platform  called
+Qwiklabs.  On  Qwiklabs,  you  do  projects   in  a  hands-on  manner  in  your
+browser. You will  get instant access to pre-configured  cloud environment that
+has everything you  need to successfully complete this Self-Paced  Lab. So, you
+can just focus on the learning.
+
+*Note*: you will have timed access to  the online environment. You will need to
+complete the  lab within  the allotted  time, though  you will  have additional
+attempts. Please download any files you would like to save prior to your access
+expiring.
+
+If you  need help troubleshooting  in the Lab  or are experiencing  issues with
+embedded Qwiklabs on Coursera, please refer  to our [[https://support.google.com/qwiklabs/?hl=en#topic=9114857][Help Center]] as a self-serve
+option, or contact support@qwiklabs.com.
+
+**** Earn a Coursera Certificate
+After  you have  completed the  *Deploy  a Hugo  Website with  Cloud Build  and
+Firebase Pipeline* lab-based project you will  be able to earn your certificate
+for this lab-based  project. There are additional resources  also available for
+you to continue your learning journey!
+
+*** The Benefits of Static Websites
 
 #+cindex:static site builders
 *Static site builders* like _Hugo_ have become popular because of their ability
@@ -86,7 +142,8 @@ Continuous Deployment pipeline* on  Google Cloud.
 - In  this lab,  you will  learn  to build  a pipeline  that demonstrates  this
   automation.
 
-** Setup
+** The Course
+*** Setup
 Read these instructions.  Labs are timed and you cannot pause them.  The timer,
 which starts when you click =Start  Lab=, shows how long Google Cloud resources
 will be made available to you.
@@ -96,7 +153,7 @@ environment, not in a simulation or demo environment.  It does so by giving you
 new, temporary credentials that you use to  sign in and access Google Cloud for
 the duration of the lab.
 
-*** What You Need
+**** What You Need
 To complete this lab, you need:
 
 - Access to a standard internet browser (Chrome browser recommended).
@@ -108,7 +165,7 @@ do not use it for this lab.
 *Note:* If you  are using a Chrome  OS device, open an Incognito  window to run
 this lab.
 
-*** How to start your lab and sign in to the Google Cloud Console
+**** How to start your lab and sign in to the Google Cloud Console
 
 #+cindex:credentials, temporary
 1. Click  the =Start Lab=  button.  If you  need to pay  for the lab,  a pop-up
@@ -117,7 +174,7 @@ this lab.
 
    [[../resources/images/-tHp4GI5VSDyTtdqi3qDFtevuY014F88+Fow-adnRgE=.png]]
 
-2. Copy the username,  and then click =Open Google Console=.   The lab spins up
+2. Copy the =username=, and then click =Open Google Console=.  The lab spins up
    resources, and then opens another tab that shows the =Sign in= page.
 
    [[../resources/images/VkUIAFY2xX3zoHgmWqYKccRLwFrR4BfARLd5ojmlbhs=.png]]
@@ -128,8 +185,8 @@ this lab.
 
    [[../resources/images/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw=.png]]
 
-3.  In  the *Sign in* page,  paste the username  that you copied from  the left
-   panel. Then copy and paste the password.
+3.  In the *Sign  in* page, paste the =username= that you  copied from the left
+   panel. Then copy and paste the =password=.
 
    *Important:* You must use the credentials  from the left panel.  Do not use
    your Google Cloud  Training credentials.  If you have your  own Google Cloud
@@ -149,14 +206,27 @@ this lab.
 
    [[../resources/images/9vT7xPlxoNP-PsK0J8j0ZPFB4HnnpaIJVCDByaBrSHg=.png]]
 
-** Process Overview
+*** Process Overview
 Here's a diagram of what you are going to build:
 
 [[../resources/images/j0UawtzBJczZe32K8wKYpiVTkIQyKSFMBfyALUzMn+I=.png]]
 
+- Create Hugo code for website
+- Commit Hugo code to Cloud Source Repositories, trigger Cloud Build
+- Download Hugo; download Firebase
+- Install Hugo; install Firebase
+- Build website with Hugo, deploy website with Firebase
+- Website
+
 #+cindex:pipeline
+#+cindex:deploy website
+#+cindex:website, deploy
+#+cindex:manual deploy
+#+cindex:deploy manually
 The goal is  to be able to commit  code and have it trigger  the pipeline which
-will in turn deploy the website.  Your  journey will be divided into two parts.
+will in turn deploy the website.
+
+#+texinfo:@heading Your  journey will be divided into two parts.
 
 1.  First, you  will *build  the  website locally*  and deploy  it to  Firebase
    manually so you can gain an understanding of the entire process.
@@ -164,12 +234,23 @@ will in turn deploy the website.  Your  journey will be divided into two parts.
 2. Second,  you will *automate the  process* by building a  pipeline with Cloud
    Build.
 
-** Manual Deployment
-First build  the website manually on  a Linux instance to  learn the end-to-end
-process.  You will also use the Linux  instance to perform some of the one-time
-tasks that are needed to get Firebase up and running.
+*** Manual Deployment---Build the Website Locally
+#+cindex:Linux instance
+#+cindex:Firebase initialization
+#+cindex:website, local
+#+cindex:deploy manually
+#+cindex:manual deployment
+*First*  build  the  website  manually  *on a  Linux  instance*  to  learn  the
+end-to-end process.   You will also use  the Linux instance to  perform some of
+the one-time tasks that are needed to get Firebase up and running.
 
-*** Connect to the Linux instance
+**** Connect to the Linux instance
+#+cindex:Linux instance, connect
+#+cindex:instance, VM
+#+cindex:VM instance
+#+cindex:IP address, VM instance
+#+cindex:external IP address
+#+cindex:SSH
 1. From  the navigation menu select  *Compute Engine > VM  Instances*. You will
    see one instance that has been built for you.
 
@@ -183,7 +264,12 @@ tasks that are needed to get Firebase up and running.
 
 4. Click =SSH=.  A window will appear and you will see a shell prompt.
 
-*** Install Hugo locally
+**** Install Hugo locally
+#+cindex:Hugo, install on local
+#+cindex:local Hugo installation
+#+cindex:install Hugo
+#+cindex:Linux instance
+#+cindex:shell script
 Now install Hugo locally in the Linux instance so that you can test the website
 locally before deploying it with Firebase.  A shell script has been provided to
 make this easier.
@@ -191,7 +277,7 @@ make this easier.
 1. In  the Linux instance shell,  examine the file ~installhugo.sh~  by running
    ~cat /tmp/installhugo.sh~. You can also see the contents below:
 
-#+findex:installhugo.sh
+#+pindex:installhugo.sh
 #+caption: Install Hugu Shell Script
 #+name: installhugo.sh
 #+begin_src sh
@@ -235,14 +321,21 @@ directory as shown below.  You are ready to build the website infrastructure.
 
 [[file:../resources/images/buO1W3FIuVRjQaEsyrepa9J+JqixRptP1GuVp+GQ-wg=.png]]
 
-*** Create a repository and the initial web site
+**** Create a repository and the initial web site
 
 #+cindex:Cloud Source Repository
-Now create a *Cloud Source Repository* to  hold the web site and then clone the
-repository to the Linux instance.  Cloning  a repository creates a mirror of it
-in the shell.  This allows you to implement the web site while in the shell and
-later commit your changes to the file  system.  Later in this lab, you will set
-up a pipeline that responds to these commits to the repository.
+#+cindex:repository, create
+#+cindex:web site
+#+cindex:Linux instance
+#+cindex:clone repository
+#+cindex:gcloud command
+Now
+ - *create* a *Cloud Source Repository* to  hold the web site and then
+ - *clone* the repository to the Linux instance.
+/Cloning/ a repository creates a mirror of it in the shell.  This allows you to
+implement the web site while in the  shell and later commit your changes to the
+file system.  Later in this lab, you  will set up a *pipeline* that responds to
+these commits to the repository.
 
 1. Enter the following commands in the Linux instance shell:
 
@@ -252,16 +345,16 @@ gcloud source repos create my_hugo_site
 gcloud source repos clone my_hugo_site
 #+end_src
 
-You will  receive confirmations about  the creation  of the repository  and the
-cloning of the repository as shown in the figure below.  You can ignore the two
-warning messages about the charge for the repository and that the repository is
-empty.
+You will receive  confirmations about the /creation of the  repository/ and the
+/cloning of the repository/  as shown in the figure below.   You can ignore the
+two  warning  messages  about  the  charge for  the  repository  and  that  the
+repository is empty.
 
 [[file:../resources/images/6Xp6TnJjneDe6pW6IjtEYYz5+Fh8GZ-ezG8mJC37CUw=.png]]
 
 Click =Check my progress= to verify the objective.
-
-2. [@2]Now  you are  ready to  create the site  structure.  Enter  the commands
+#+cindex:hugo new site
+2. [@2]Now  you are ready to  *create the site structure*.   Enter the commands
    below in the Linux shell.
 
 : cd ~
@@ -275,7 +368,12 @@ figure below.
 
 [[file:../resources/images/44IDjiRjRFJhaNI9hpuTrTEUj40jAY4h6rpe5d9JUy8=.png]]
 
-3. [@3]Now install the  Ananke theme to provide a layout  for your site.  Enter
+#+cindex:theme, Ananke
+#+cindex:Ananke theme
+#+cindex:hugo theme
+#+cindex:submodule, git
+#+cindex:Linux instance
+3. [@3]Now install the *Ananke theme* to provide a layout for your site.  Enter
    the following commands in the Linux instance shell:
 
    #+begin_src sh
@@ -291,24 +389,32 @@ figure below.
 
    [[file:../resources/images/iYg2p-0+z4Vfpl2aqdojAlxQHJx1c3nVMsdHczChPVo=.png]]
 
-4. [@4]With  the structure  of the  web site set  up, you  can now  preview it.
+   #+cindex:TCP port
+   #+cindex:port, TCP
+   #+cindex:web site, preview
+4. [@4]With  the structure of the  web site set  up, you can now  *preview* it.
    Enter the command below to launch the site at TCP port 8080:
 
    : cd ~/my_hugo_site
    : /tmp/hugo server -D --bind 0.0.0.0 --port 8080
 
+   #+cindex:build web site
+   #+cindex:web site, build
    Hugo will build the  site and serve it for access on TCP  port 8080 as shown
    in the figure  below.  The server will  run until it is  stopped by pressing
    =Ctrl+C=.
 
    [[file:../resources/images/1A3uN+W8FrMEnQ7S-VX-ZroU9czLv1Z7AV+-3HS71ME=.png]]
 
+   #+cindex:external IP address
+   #+cindex:IP address, external
 5.  [@5]Open a browser tab and browse  to the external IP address at port 8080.
    Use the following URL, replacing [EXTERNAL  IP] with the external IP address
    of your instance:
 
    : http://[EXTERNAL IP]:8080
 
+   #+cindex:web site, look like
    The web site should look like this.
 
    [[file:../resources/images/iGCS5ksMweWQdrBe9CzcnANJg42pSIiaABQsbNK-MW4=.png]]
@@ -317,13 +423,19 @@ figure below.
 
 6. [@6]Go back to the Linux shell and press =Ctrl+C= to stop the Hugo server.
 
-*** Add Firebase to your project
+**** Add Firebase to your project
+#+cindex:Firebase
+#+cindex:deploy to Firebase
+#+cindex:website, deploy to Firebase
 Now  that you  know what  the website  looks like,  it's time  to deploy  it to
-Firebase.  First enable Firebase within your existing project.
+Firebase.
+#+texinfo: @heading First enable Firebase within your existing project.
 
 #+cindex:Firebase console
+#+cindex:Firebase, enable
+#+cindex:project, Firebase
 1. Open  a new  tab in your  browser then  open this  [[https://console.firebase.google.com/][link]] in it  to go  to the
-   Firebase console.
+   Firebase console.[fn:1]
 
    Now  click =Add  project=.  You  will be  asked to  select a  name for  your
    project.  Click  inside of the  name field  and select your  existing Google
@@ -332,7 +444,7 @@ Firebase.  First enable Firebase within your existing project.
 
    [[file:../resources/images/68ovTX3M+k+Uyqq4+dLY2ugDUsW1Lumcg2buOFhUFWs=.png]]
 
-2. Accept the Firebase terms, then click Continue.
+2. Accept the Firebase terms, then click =Continue=.
 
 3. You may be  asked to confirm the Firebase billing  plan.  The Firebase costs
    are included with the lab. If you are prompted, click =Confirm plan=.
@@ -347,54 +459,69 @@ Firebase.  First enable Firebase within your existing project.
 
 6. Click =Continue= if prompted after Firebase is added.
 
-*** Deploy the site to Firebase
+**** Deploy the site to Firebase
 
-#+cindex:Fireball
-1. Install Fireball CLI in the Linux instance shell:
+#+cindex:Firebase CLI
+#+cindex:CLI, Firebase
+#+cindex:initialize Firebase
+#+cindex:Firebase, initialize
+#+cindex:@command{firebase init}
+#+cindex:@command{firebase deploy}
+#+cindex:hosting URL
+#+cindex:Hosting, Firebase option
+#+cindex:URL, hosting
+#+cindex:Firebase Hosting option
+1. Install *Firebase CLI* in the Linux instance shell:
 
    : curl -sL https://firebase.tools | bash
 
-2. Now you need to initialize Firebase. Enter the command below into the shell:
+2. Now you need to /initialize/ Firebase. Enter the command below into the shell:
 
    : cd ~/my_hugo_site
    : firebase init
 
-3. Select  *Hosting* using  the arrow  keys and spacebar.   When asked  for a
- project option, select  =Use an existing project=, then use  the arrow keys,
- spacebar, and  the Enter key  to select the Project  ID provided on  the lab
- instruction  page.   For the  public  directory,  select the  default  value
- public.  For  configuring as a  single page application, select  the default
- value of  =N=.  For  setting up  automatic builds  and deploys  with GitHub,
- select =N=.
+3. Select *Hosting*  using the  arrow keys  and spacebar.
+   - When asked for a /project option/,  select =Use an existing project=, then
+     use the arrow  keys, spacebar, and the =Enter= key  to select the *Project
+     ID*  provided on  the lab  instruction  page.
 
- If asked to overwrite any existing files, select =Y=.
+   - For the /public directory/, select the default value ~public~.
 
-4. You are ready to deploy the  application.  Enter the commands below into the
-   Linux instance  shell to rebuild  the site with Hugo  and to deploy  it with
+   - For configuring as  a /single page application/, select  the default value
+     of =N=.
+
+   - For setting up /automatic builds and deploys with GitHub/, select =N=.
+
+   - If asked to overwrite any existing files, select =Y=.
+
+4. You  are ready to /deploy/  the application.  Enter the  commands below into
+   the Linux instance shell to rebuild the site with Hugo and to deploy it with
    Firebase:
 
    : /tmp/hugo && firebase deploy
 
-5.  After  the application has been  deployed, you will receive  a hosting URL.
-   Click on it and you will see the same website being served from the Firebase
-   CDN (content delivery network).  If you receive a generic "welcome" message,
-   wait a  few minutes for  the CDN to be  initialized and refresh  the browser
-   window.  Save this hosting URL for later use.
+5. After the  application has been deployed, you will  receive a *hosting URL*.
+   Click  on it  and  you will  see  the  same website  being  served from  the
+   *Firebase  CDN* (/content  delivery  network/).  If  you  receive a  generic
+   "welcome" message,  wait a  few minutes  for the CDN  to be  initialized and
+   refresh the browser window.  Save this hosting URL for later use.
 
 You  have now  performed  the  entire deployment  locally.  Next, automate  the
 process from end to end using Cloud Build.
 
 *** Automate the Deployment
-
-** Automate the Deployment
-*** Perform the Initial Commit
+**** Perform the Initial Commit
+#+cindex:trigger builds
+#+cindex:pipeline
+#+cindex:repository changes, trigger builds
+#+cindex:@command{git} global parameters
 The goal of building the pipeline is  to be able to trigger builds when changes
 are made to the repository.  You will  start by performing an initial commit to
 the repository so that you can validate your ability to make future changes.
 
-1. Configure the git commands global  parameters by entering the commands below
-   into the  Linux shell.  Use  your name  (or any name  you wish) in  place of
-   =GIT_NAME=. Use  the =username/e-mail= address  you were given for  this lab
+1. Configure  the ~git~  command's global parameters  by entering  the commands
+   below into the Linux  shell.  Use your name (or any name  you wish) in place
+   of =GIT_NAME=. Use the =username/e-mail= address you were given for this lab
    for the =GIT_EMAIL= value.  Make sure to include the quotation marks.
 
    : git config --global user.name "[GIT_NAME]"
@@ -415,9 +542,12 @@ the repository so that you can validate your ability to make future changes.
    You have  now committed  (uploaded) the  initial version  of the  website to
    Google Cloud.
 
-*** Configure the Build
-Cloud Build  uses a file named  ~cloudbuild.yaml~ in the root  directory of the
-repository to  perform the build.  The  file is in =YAML=  format.  Spacing and
+**** Configure the Build
+#+findex:cloudbuild.yaml
+#+cindex:Cloud Build configuration
+#+cindex:Linux instance
+*Cloud Build* uses a file named ~cloudbuild.yaml~ /in the root directory of the
+repository/ to perform  the build.  The file is in  =YAML= format.  Spacing and
 indentation are important, so it has  already been placed on the Linux instance
 for you.
 
@@ -433,7 +563,7 @@ for you.
    : cat cloudbuild.yaml
 
    #+caption: Cloudbuild YAML
-   #+naem: cloudbuild.yaml
+   #+name: cloudbuild.yaml
    #+begin_src sh
      # Copyright 2020 Google Inc. All rights reserved.
      #
@@ -489,15 +619,15 @@ for you.
 
 3. [@3]Here are some observations about the ~cloudbuild.yaml~ file:
 
-   - There are three named  steps in this file each of which  is performed by a
-     container image.   The first two  steps use a Google-supported  builder to
-     use ~wget~ to  download the Hugo and Firebase tools.   These two steps run
+   - There are three *named steps* in this file each of which is performed by a
+     container image.  The first two  steps use a *Google-supported builder* to
+     use ~wget~ to *download the Hugo and Firebase tools*.  These two steps run
      in parallel.   Using the ~wget~  builder is faster than  installing ~wget~
      manually.
 
-   - The  third step  uses  a standard  Ubuntu container  to  install Hugo  and
-     Firebase after which  the site is built and deployed.  Installing Hugo and
-     Firebase for  each deployment  allows you  to change  the version  of Hugo
+   - The third  step uses  a standard  Ubuntu container  to *install  Hugo* and
+     *Firebase* after  which the site  is built and deployed.   Installing Hugo
+     and Firebase for each deployment allows  you to change the version of Hugo
      whenever you desire while also using the latest version of Firebase.
 
    - The ~tar~ and  ~wget~ commands are nearly identical to  those used earlier
@@ -511,9 +641,10 @@ for you.
      directory so  that they do not  inadvertently get deployed to  the website
      itself.
 
-*** Create the Cloud Build Trigger
-Now create a trigger  that will respond to commits to the  master branch of the
-repository.
+**** Create the Cloud Build Trigger
+#+cindex:trigger, create
+Now create a *trigger*  that will /respond to commits to  the master branch/ of
+the repository.
 
 1. In  the  Cloud Console,  navigate  to  =Navigation  Menu  > Cloud  Build  >
   Triggers=.
@@ -535,8 +666,13 @@ repository.
 
 4. [@4]Click *Create*.
 
-*** Update the Cloud Build service account
-The Cloud  Build Service account needs  to have permissions to  use Firebase to
+**** Update the Cloud Build service account
+#+cindex:permissions
+#+cindex:IAM
+#+cindex:Cloud Console
+#+cindex:Cloud Build Service Account
+#+cindex:role
+The Cloud  Build Service Account needs  to have permissions to  use Firebase to
 deploy the website.
 
 1. From the Cloud Console *Navigation menu*, select *IAM & Admin > IAM*.
@@ -547,7 +683,16 @@ deploy the website.
    principal* icon,  then click =ADD ANOTHER  ROLE= and add the  role *Firebase
    Products > Firebase Hosting Admin* to it. Click =SAVE=.
 
-*** Test the Pipeline
+**** Test the Pipeline
+#+cindex:pipeline, test
+#+cindex:trigger build, test
+#+cindex:Cloud Build console
+#+cindex:console, Cloud Build
+#+cindex:Linux instance
+#+findex:config.toml
+#+cindex:build history
+#+cindex:SSL certificate
+#+cindex:certificate, SSL
 Now that you have created the pipeline, you  can make a change to the site then
 commit it to see if the change propagates.
 
@@ -560,7 +705,7 @@ commit it to see if the change propagates.
    such as /My Cool New Hugo Site/ and save the changed file.
 
 3. In the  Linux shell, enter the  commands below to commit the  changes to the
-   repository and trigger the Cloud Build pipeline:
+   repository and *trigger the Cloud Build pipeline*:
 
    : git add .
    : git commit -m "I updated the site title"
@@ -586,6 +731,10 @@ deployment times allow you to innovate  quickly and test your website revisions
 with little  effort.  Consult  the Cloud Build  and Firebase  documentation for
 more information.
 
+*** Certificate
+
+[[../resources/images/Coursera ABC9H6AUVFT9.pdf]]
+
 *** Finish the Quest
 This self-paced lab is part of the [[https://google.qwiklabs.com/quests/148][Qwiklabs Build Apps & Websites with Firebase]]
 Quest.   A /Quest/  is a  series of  related labs  that form  a learning  path.
@@ -596,11 +745,205 @@ completion  credit if  you've taken  this  lab.  See  other available  Qwiklabs
 Quests.
 
 *** Take the Next Lab
-Continue your quest with [[https://google.qwiklabs.com/catalog_lab/1464][Google Assistant: Build an Applicaiton with Dialogflow
+Continue your quest with [[https://google.qwiklabs.com/catalog_lab/1464][Google Assistant: Build an Application with Dialogflow
 and Cloud Functions]], or try one of these:
 
 - [[https://google.qwiklabs.com/catalog_lab/2163][Importing Data to a Firestore Database]]
 - [[https://google.qwiklabs.com/catalog_lab/2166][Build a Serverless Web App with Firebase]]
+
+* Google Assistant---Build an Application with DialogFlow
+- https://www.cloudskillsboost.google/focuses/3634?parent=catalog
+
+A Google Cloud Self-Paced Lab---GSP174
+
+** Overview
+*Google Assistant* is a personal voice  assistant that offers a host of actions
+and integrations. From  making appointments and setting  reminders, to ordering
+coffee and playing music, the 1 million+ actions available suit a wide range of
+voice command tasks. Google Assistant is offered on Android and iOS, but it can
+even  be integrated  with other  devices like  smartwatches, Google  Homes, and
+Android TVs.
+
+*Actions*   is   the  central   platform   for   developing  Google   Assistant
+applications. The  Actions platform integrates with  human-computer interaction
+suites, which simplifies  conversational app development. The  most widely used
+suite is Dialogflow, which uses an underlying machine learning (ML) and natural
+language understanding (NLU)  schema to build rich  Assistant applications. The
+Actions  platform also  integrates with  Cloud  Functions, which  lets you  run
+backend  fulfillment  code  in  response  to  events  triggered  by  Dialogflow
+requests.
+
+In this  lab, you  will get  hands-on practice with  the Actions  platform, the
+Dialogflow  suite,  and  Cloud  Functions  by building  a  "Silly  Name  Maker"
+application, which returns a user with a  silly name after they have entered in
+a  lucky number  and favorite  color. You  will build  a Dialogflow  agent that
+intelligently parses  user input  for specific information.  The agent  will be
+supplemented with a  webhook, which will trigger a Cloud  Function that handles
+fulfillment logic and returns your user with their silly name.
+
+#+texinfo:@heading What You Will Learn
+In this lab, you will learn how to:
+
+- Create an Actions project and build an Action.
+
+- Create a Dialogflow agent and configure the default welcome intent.
+
+- Build a custom intent with entities.
+
+- Initialize a Cloud Function.
+
+- Add fulfillment logic and packages to your Cloud Function.
+
+- Add a webhook to your Action.
+
+- Test your  Assistant application with  the Actions simulator on  expected and
+  unexpected conversational paths.
+
+- Optional: test your Assistant application on a Google Home device.
+
+#+texinfo:@heading Prerequisites
+This is a *fundamental level lab*. Familiarity with the Actions Console and the
+Qwiklabs platform is  expected. If you need  to get up to speed  with the lab's
+requirements, please complete one of the following Qwiklabs:
+
+- A Tour of Google Cloud Hands-on Labs
+
+- Google Assistant: Qwik Start - Dialogflow
+
+Since this lab works with the Actions simulator, having a pair of headphones or
+turning the volume up on your computer is recommended. If you want to test your
+Assistant application on a Google Home, keep your device handy.
+
+Once you're ready,  scroll down and follow  the steps below to set  up your lab
+environment.
+
+** Setup
+#+texinfo:@heading Cloud Console
+#+texinfo:@subheading How to start your lab and sign in to the Google Cloud Console
+
+1. Click the *Start Lab* button. If you need to pay for the lab, a pop-up opens
+   for you to select your payment method. On the left is a panel populated with
+   the temporary credentials that you must use for this lab.
+
+2. Copy the username,  and then click *Open Google Console*.   The lab spins up
+   resources, and then opens another tab that shows the *Sign in* page.
+
+   *Tip:* Open the tabs in separate windows, side-by-side.
+
+3.  In  the *Sign in* page,  paste the username  that you copied from  the left
+   panel. Then copy and paste the password.
+
+   *Important:* You  must use the credentials  from the left panel.  Do not use
+   your Google  Cloud Training credentials. If  you have your own  Google Cloud
+   account, do not use it for this lab (avoids incurring charges).
+
+4. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+
+   - Do not add recovery options  or two-factor authentication (because this is
+     a temporary account).
+
+   - Do not sign up for free trials.
+
+After a few moments, the Cloud Console opens in this tab.
+
+** Create an Actions project
+Regardless of the  Assistant application you're building, you  will always have
+to create an Actions project so your app has an underlying organizational unit.
+
+Open the Actions  on [[http://console.actions.google.com/][Google Developer Console]]  in a new tab. Sign  in with your
+Qwiklabs credentials  if prompted.  You should  be looking  at a  clean Actions
+console that resembles the following:
+
+Click *New  Project* and  agree to  Actions on Google's  terms of  service when
+prompted by clicking *Agree and continue*.
+
+Click  into the  =Project Name=  field and  select your  Qwiklabs Google  Cloud
+project ID from the dropdown. Then click *Import project*:
+
+Soon  after you  will  be presented  with  a welcome  page  that resembles  the
+following:
+
+Now  click  *Actions  Console*  in  the  top  left  corner  to  return  to  the
+homepage. Then click on the project you just created (title has your Project ID
+as the name.)
+
+** Build An Action
+An /action/  is an interaction you  build for the Google  Assistant.  An action
+supports a  specific /intent/ (a goal  or task that users  want to accomplish),
+which is  carried out by a  corresponding /fulfillment/ (logic that  handles an
+intent and carries out the corresponding  Action.) You will now build an Action
+that supports silly name generation.
+
+Click on your project name. Then from the center menu click:
+: Build your Action > Add Action(s) > Get Started
+
+Then select
+: Custom Intent > BUILD:
+
+This will take you to the  Dialogflow console. Select your Qwiklabs account and
+click *Allow* when Dialogflow prompts you  for permission to access your Google
+Account.
+
+When you land  on the Dialogflow account  settings page, check the  box next to
+*Yes, I have read and accept the agreement* and click *Accept*.
+
+If  you are  brought to  the following  Dialogflow agent  creation page,  click
+*CREATE*:
+
+If you are brought to this page instead:
+
+Close  the Dialogflow  agent  creation  tab. You  will  return  to the  Actions
+Console.
+
+Click
+: Get Started > Custom Intent > BUILD.
+
+Select your Qwiklabs account and click  *Allow* when Dialogflow prompts you for
+permission to access your Google Account.
+
+Now click CREATE:
+
+An /agent/ is an organizational unit that collects information needed to complete
+a user's request, which it then forwards to a service that provides fulfillment
+logic.
+
+You will  now build  the basic  framework for fulfillment  logic. This  will be
+handled (later) by a Cloud Function, which will return a response with a user's
+silly name.
+
+*** Test Completed Task
+Click *Check my progress* to verify your performed task.
+
+Click *Fulfillment* from  the left-hand menu. Move the slider  for *Webhook* to
+the right, setting it to *Enabled*.
+
+Now enter the  temporary URL https://google.com in for the  URL field. You will
+update this URL  when you build your Cloud Function.  Your page should resemble
+the following:
+
+Scroll down and click Save in the  bottom right corner. Then click Intents from
+the left hand menu and select Default Welcome Intent:
+
+You will  now build the main  entry point into your  application by configuring
+the default welcome intent.
+
+** Configure the default welcome intent
+
+** Design the conversation
+
+** Configure a custom intent
+
+** Initialize and configure a Cloud Function
+
+** Configure the webhook
+
+** Test your Assistant application with the Actions simulator
+
+** Optional: test your application on a Google Home device
+
+** Congratulations!
 
 * Cloud Source Repositories---Qwik Start
 :PROPERTIES:
@@ -704,6 +1047,513 @@ In this  lab, you  will
 ** Deploy your app using Firebase Hosting
 
 ** Congratulations!
+
+* About Hugo Static Site Generator
+The world’s fastest framework for building  websites.  Hugo is not your average
+static site generator.
+
+- [[https://gohugo.io][Hugo Home]]
+- [[https://github.com/gohugoio/hugo][Hugo on GitHub]]
+
+Hugo is a fast and modern static  site generator written in Go, and designed to
+make website creation fun again.
+
+Hugo is  one of the most  popular open-source static site  generators. With its
+amazing speed and flexibility, Hugo makes building websites fun again.
+
+Improved performance, security  and ease of use  are just a few  of the reasons
+static site generators are so appealing.
+
+Hugo v0.15 and later are released under the Apache 2.0 license.
+
+** Features
+
+- Speed
+
+  Hugo is  the fastest tool of  its kind. At <1  ms per page, the  average site
+  builds in less than a second.
+
+- Shortcodes
+
+  Hugo's shortcodes are Markdown's hidden superpower.
+
+  We love  the beautiful simplicity of  markdown’s syntax, but there  are times
+  when we  want more  flexibility. Hugo  shortcodes allow  for both  beauty and
+  flexibility.
+
+- Multilingual and i18n
+
+  Polyglot baked in.
+
+  Hugo  provides full  i18n  support  for multi-language  sites  with the  same
+  straightforward  development experience  Hugo users  love in  single-language
+  sites.
+
+- Robust Content Management
+
+  Flexibility rules. Hugo is a content strategist's dream.
+
+  Hugo supports unlimited content  types, taxonomies, menus, dynamic API-driven
+  content, and more, all without plugins.
+
+- Built-in Templates
+
+  Hugo has common patterns to get your work done quickly. 300+ Themes
+
+  Hugo ships  with pre-made templates  to make  quick work of  SEO, commenting,
+  analytics and other functions. One line of code, and you're done.
+
+  Hugo provides a  robust theming system that is easy  to implement but capable
+  of producing even the most complicated websites.
+
+- Custom Outputs
+
+  HTML not enough?
+
+  Hugo allows you to output your content in multiple formats, including JSON or
+  AMP, and makes it easy to create your own.
+
+- Capable Templating
+
+  Hugo's Go-based templating  provides just the right amount of  logic to build
+  anything from the simple to complex.
+
+** Runtime Security
+Hugo  produces  static output,  so  once  built,  the  runtime is  the  browser
+(assuming the output is HTML) and any server (API) that you integrate with.
+
+But  when  developing  and  building  your site,  the  runtime  is  the  ~hugo~
+executable. Securing a runtime can be a real challenge.
+
+#+texinfo:@heading Hugo’s main approach is that of sandboxing
+
+- Hugo has  a virtual file  system and only  the main project  (not third-party
+  components)  is allowed  to mount  directories or  files outside  the project
+  root.
+
+- Only the main project can walk symbolic links.
+
+- User-defined components have only read-access to the filesystem.
+
+- We shell  out to some external  binaries to support Asciidoctor  and similar,
+  but those binaries  and their flags are predefined. General  functions to run
+  arbitrary  external OS  commands  have been  discussed,  but not  implemented
+  because of security concerns.
+
+#+texinfo:@heading Dependency Security 
+
+Hugo builds as a static binary using  Go Modules to manage its dependencies. Go
+Modules have several safeguards, one of them being the ~go.sum~ file. This is a
+database of the  expected cryptographic checksums of all  of your dependencies,
+including any transitive.
+
+Hugo Modules is  built on top of  Go Modules functionality, and  a Hugo project
+using Hugo Modules will have a ~go.sum~ file. We recommend that you commit this
+file to your  version control system.  The  Hugo build will fail if  there is a
+checksum mismatch, which would be an indication of dependency tampering.
+
+** Install Hugo
+Install Hugo  on macOS, Windows,  Linux, OpenBSD,  FreeBSD, and on  any machine
+where the Go compiler tool chain can run.
+
+Hugo is written  in Go with support for multiple  platforms. The latest release
+can be found at [[https://github.com/gohugoio/hugo/releases][Hugo Releases]].
+
+Hugo currently provides pre-built binaries for the following:
+
+- macOS (Darwin) for x64, i386, and ARM architectures
+- Windows
+- Linux
+- OpenBSD
+- FreeBSD
+
+Hugo may also be compiled from source  wherever the Go toolchain can run; e.g.,
+on other operating systems such as DragonFly BSD, OpenBSD, Plan 9, Solaris, and
+others.
+
+*** Quik Install
+
+**** Binary
+Download the  appropriate version  for your platform  from Hugo  Releases. Once
+downloaded, the binary can  be run from anywhere. You don’t  need to install it
+into a  global location.  This works  well for shared  hosts and  other systems
+where you don’t have a privileged account.
+
+Ideally,   you  should   install  it   somewhere  in   your  =PATH=   for  easy
+use. ~/usr/local/bin~ is the most probable location.
+
+**** Docker
+We currently do not offer official Hugo  images for Docker, but we do recommend
+these up to date distributions: https://hub.docker.com/r/klakegg/hugo/
+
+**** Homebrew
+If you are on macOS and using Homebrew, you can install Hugo with the following
+one-liner:
+
+: brew install hugo
+
+**** MacPorts
+If you are on macOS and using MacPorts, you can install Hugo with the following
+one-liner:
+
+: port install hugo
+
+**** Homebrew Linux
+If you  are using Homebrew  on Linux, you can  install Hugo with  the following
+one-liner:
+
+: brew install hugo
+
+*** Source
+
+**** Prerequisite Tools
+- Git
+- Go (>= v1.11)
+
+**** Fetch from GitHub
+Since  Hugo 0.48,  Hugo uses  the  Go Modules  support  built into  Go 1.11  to
+build. The easiest way  to get started is to clone Hugo  in a directory outside
+of the =GOPATH=, as in the following example:
+
+#+caption: Install Hugo from Source on GitHub
+#+name:from-gh.sh
+#+begin_src sh
+  mkdir $HOME/src
+  cd $HOME/src
+  git clone https://github.com/gohugoio/hugo.git
+  cd hugo
+  go install --tags extended
+  # Remove --tags extended if you do not want/need Sass/SCSS support.
+#+end_src
+
+** Basic Usage
+The following is a  description of the most common commands  you will use while
+developing  your   Hugo  project.
+- See the [[https://gohugo.io/commands/][Command Line Reference]] for a comprehensive view of Hugo’s CLI.
+
+*** Make Sure Hugo Is Installed
+Once you  have installed Hugo, make  sure it is  in your =PATH=.  You  can test
+that Hugo has been installed correctly via the help command:
+
+: hugo help
+
+You should see some help output.
+
+*** Hugo Command
+The most  common usage is  probably to run  ~hugo~ with your  current directory
+being the input directory.
+
+This generates your website to the ~public/~ directory by default, although you
+can customize the  output directory in your site configuration  by changing the
+~publishDir~ field.
+
+The command  ~hugo~ renders  your site into  ~public/~ dir and  is ready  to be
+deployed to your web server:
+
+#+begin_example
+hugo
+0 draft content
+0 future content
+99 pages created
+0 paginator pages created
+16 tags created
+0 groups created
+in 90 ms
+#+end_example
+
+*** Draft-Future-and Expired Content
+Hugo allows  you to set =draft=,  =publishdate=, and even =expirydate=  in your
+content’s front matter.  By default, Hugo will not publish:
+
+1. Content with a future =publishdate= value
+2. Content with =draft: true= status
+3. Content with a past =expirydate= value
+
+All  three  of these  can  be  overridden  during  both local  development  and
+deployment  by  adding  the  following  flags  to  ~hugo~  and  ~hugo  server~,
+respectively, or by  changing the boolean values assigned to  the fields of the
+same name (without =--=) in your configuration:
+
+1. =--buildFuture=
+2. =--buildDrafts=
+3. =--buildExpired=
+
+*** Live Reload
+Hugo comes  with *LiveReload* built  in.  There  are no additional  packages to
+install.  A common way to use Hugo while  developing a site is to have Hugo run
+a server with the ~hugo server~ command and watch for changes:
+
+#+begin_example
+hugo server
+0 draft content
+0 future content
+99 pages created
+0 paginator pages created
+16 tags created
+0 groups created
+in 120 ms
+Watching for changes in /Users/yourname/sites/yourhugosite/{data,content,layouts,static}
+Serving pages from /Users/yourname/sites/yourhugosite/public
+Web Server is available at http://localhost:1313/
+Press Ctrl+C to stop
+#+end_example
+
+This will run a fully functioning web server while simultaneously watching your
+file system for additions, deletions, or  changes within the following areas of
+your project organization:
+
+- =/static/*=
+- =/content/*=
+- =/data/*=
+- =/i18n/*=
+- =/layouts/*=
+- =/themes/<CURRENT-THEME>/*=
+- =config=
+
+Whenever  you make  changes,  Hugo  will simultaneously  rebuild  the site  and
+continue to serve  content. As soon as the build  is finished, LiveReload tells
+the browser to silently reload the page.
+
+Most Hugo builds are so fast that  you may not notice the change unless looking
+directly at the site in your browser.  This means that keeping the site open on
+a second monitor  (or another half of  your current monitor) allows  you to see
+the most up-to-date version of your website without the need to leave your text
+editor.
+
+#+begin_cartouche
+Hugo  injects  the LiveReload  <script>  before  the  closing </body>  in  your
+templates and will therefore not work if this tag is not present..
+#+end_cartouche
+
+**** Redirect automatically to the page you just saved
+When you are working with more than one  document and want to see the markup as
+real-time as possible it’s not ideal  to keep jumping between them. Fortunately
+Hugo  has an  easy,  embedded and  simple  solution for  this.
+
+- It’s the  flag ~--navigateToChanged~
+
+**** Disable LiveReload
+LiveReload works  by injecting  JavaScript into the  pages Hugo  generates. The
+script creates  a connection from the  browser’s web socket client  to the Hugo
+web socket server.
+
+The following methods make it easy to disable LiveReload:
+
+: hugo server --watch=false
+
+Or…
+
+: hugo server --disableLiveReload
+
+The latter flag can be omitted by adding the following to the ~config~:
+
+#+begin_src js
+  {
+     "disableLiveReload": true
+  }
+#+end_src
+
+*** Deploy Your Website
+After running ~hugo server~  for local web development, you need  to do a final
+~hugo run~ without  the server part of  the command to rebuild  your site.  You
+may then deploy your site by copying the ~public/~ directory to your production
+web server.
+
+Since Hugo generates  a static website, your site can  be hosted anywhere using
+any  web server.   See  Hosting  and Deployment  for  methods  for hosting  and
+automating deployments contributed by the Hugo community.
+
+#+begin_cartouche
+Running ~hugo~  does not  remove generated files  before building.   This means
+that you should  delete your ~public/~ directory (or the  publish directory you
+specified via flag or configuration file) before running the ~hugo~ command. If
+you do  not remove  these files,  you run the  risk of  the wrong  files (e.g.,
+drafts or future posts) being left in the generated site.
+#+end_cartouche
+
+* About Google Cloud
+- [[https://cloud.google.com][Google Cloud]]
+- [[https://cloud.google.com/gcp/getting-started][Quick Starts]]
+
+
+- Create a Linux VM
+- Store a File and Share It
+- Deploy a Docker Container Image
+- Train a TensorFlow Model
+- Run Label Detection on an Image
+- Deploy a Python Application on App Engine
+
+#+texinfo: @heading Bookshelf App
+#+texinfo: @subheading The Bookshelf app is a sample web app that shows how to use a variety of Google Cloud products, including:
+
+- App Engine flexible environment
+- Cloud Storage
+- Cloud SQL
+- Compute Engine
+- Datastore
+
+
+#+texinfo: @heading Developer and Management Tools
+#+texinfo: @subheading Tools and libraries to enhance developer productivity on Google Cloud.
+
+- Cloud SDK :: [[https://cloud.google.com/sdk][Cloud SDK Link]]
+
+  Command-line interface for Google Cloud products and services.
+
+- Cloud Shell :: [[https://cloud.google.com/shell][Cloud Shell Link]]
+
+  Manage  your infrastructure  and applications  from the  command-line in  any
+  browser.
+
+- Cloud Console :: [[https://cloud.google.com/cloud-console][Cloud Console Link]]
+
+  Your integrated Google Cloud management console.
+
+** About Google Cloud Source Repositories
+*Cloud  Source Repositories*  are  private Git  repositories  hosted on  Google
+Cloud. These  repositories let you  develop and deploy an  app or service  in a
+space that provides collaboration and version control for your code.
+
+- [[https://cloud.google.com/source-repositories][Google Cloud Source Repositories]]
+- [[https://cloud.google.com/source-repositories/docs][Documentation]]
+- [[https://console.cloud.google.com/freetrial/signup/tos?_ga=2.40204066.101294923.1636554500-1996190523.1636554500][Create an Account]]
+
+A single place for your team to store, manage, and track code.
+
+- Design, develop, and securely manage your code
+- Collaborate easily on a fully featured, scalable, and private Git repository
+- Extend your Git workflow by connecting to other Google Cloud tools
+
+#+texinfo: @heading Benefits
+- Unlimited private Git repositories ::
+
+  Get free  unlimited private  repositories to organize  your code  however you
+  wish. Mirror code from GitHub or  Bitbucket repositories to get powerful code
+  search, code browsing, and diagnostics capabilities.
+
+- Improve developer productivity ::
+
+  Get fast feedback  on code changes with built-in  continuous integration. You
+  can easily set up triggers to  automatically build and test using Cloud Build
+  when you push changes to Cloud Source Repositories.
+
+- Fast code search ::
+
+  Use  powerful regexp  to  search  across multiple  directories.  You can  use
+  regular expressions to refine your search or perform a single targeted search
+  across projects, files, and code repositories.
+
+#+texinfo: @heading Key Features
+- Source Browser ::
+
+  View repository files from within  the Cloud Source Repositories using Source
+  Browser. Filter your view to focus on a specific branch, tag, or commit.
+
+- Perform Git Operations ::
+
+  Set up a repository  as a Git remote. Push, pull, clone  and log, and perform
+  other Git operations required by your workflow.
+
+- Automatic Syncing ::
+
+  Connect  Cloud  Source Repositories  to  a  hosted  repository on  GitHub  or
+  Bitbucket.  Automatically  sync changes  to  Cloud  Source Repositories  when
+  changes are pushed to GitHub or Bitbucket.
+
+- Proven Reliability ::
+
+  Manage your code  on systems distributed geographically  across multiple data
+  centers and being run on Google’s infrastructure with high availability.
+
+** About Google Cloud Build
+Build, test, and deploy on our serverless CI/CD platform.
+
+- [[https://cloud.google.com/build][Google Cloud Build]]
+- [[https://cloud.google.com/build/docs][Documentation]]
+
+Cloud Build  is a service  that executes your  builds on Google  Cloud Platform
+infrastructure. Cloud  Build can import  source code from Cloud  Storage, Cloud
+Source  Repositories,   GitHub,  or   Bitbucket,  execute   a  build   to  your
+specifications,  and  produce  artifacts  such as  Docker  containers  or  Java
+archives.
+
+Cloud Build executes  your build as a  series of build steps,  where each build
+step is  run in a Docker  container. A build step  can do anything that  can be
+done from a  container irrespective of the environment. To  perform your tasks,
+you can either use  the supported build steps provided by  Cloud Build or write
+your own build steps.
+
+- Build
+
+- Deploy
+
+- Automate
+
+- Build software quickly across all  programming languages, including Java, Go,
+  Node.js, and more
+
+- Choose from 15 machine types and run hundreds of concurrent builds per pool
+
+- Deploy across multiple  environments such as VMs,  serverless, Kubernetes, or
+  Firebase
+
+- Access  cloud-hosted,  fully  managed  CI/CD workflows  within  your  private
+  network
+
+- Keep your data at rest within a geographical region or specific location with
+  data residency
+
+#+texinfo: @heading Benefits
+- Fully serverless platform ::
+
+  Cloud  Build  scales  up  and  scales down  with  no  need  to  pre-provision
+  servers. Pay only for what you use. With private pools, you get access to the
+  same serverless benefits within your own private network
+
+- Flexibility ::
+
+  With  custom build  steps  and pre-created  extensions  to third-party  apps,
+  enterprises can  easily tie  their legacy  or home-grown tools  as a  part of
+  their build process.
+
+- Security and compliance ::
+
+  Scan  for  vulnerabilities  as  part   of  your  CI/CD.  Automatically  block
+  deployment of  vulnerable images. Set up  a secure CI/CD perimeter  and block
+  public IPs with built-in support for VPC peering and VPC-SC.
+
+#+texinfo: @heading Key Features
+- Extremely fast builds ::
+
+  Access machines connected via Google’s global network to significantly reduce
+  your build time. Run builds on high-CPU  VMs or cache source code, images, or
+  other dependencies to further increase your build speed.
+
+- Automate your deployments ::
+
+  Create   pipelines   as   a   part   of  your   build   steps   to   automate
+  deployments. Deploy using built-in  integrations to Google Kubernetes Engine,
+  App Engine, Cloud Functions, and Firebase. Use Spinnaker with Cloud Build for
+  creating and executing complex pipelines.
+
+- Support for multicloud ::
+
+  Deploy to multiple clouds as a part of your CI/CD pipeline. Cloud Build comes
+  with   builder    images   which    have   languages   and    tools   already
+  installed. Likewise,  containerized tasks of  Cloud Build are  fully portable
+  across different clouds.
+
+- Commit to deploy in minutes ::
+
+  Going from PR to build, test, and deploy can’t be simpler. Set up triggers to
+  automatically build,  test, or deploy  source code  when you push  changes to
+  GitHub, Cloud Source Repositories, or a Bitbucket repository.
+
+- Unparalleled privacy ::
+
+  Run  builds on  infrastructure protected  by Google  Cloud security.  Trigger
+  fully managed CI/CD workflows from private source code repositories hosted in
+  private networks, including GitHub Enterprise.
 
 * Build Tools
 :PROPERTIES:
@@ -1836,14 +2686,19 @@ Copyright \copy 2020 by {{{author}}}
 #+texinfo_printed_title:DeployHugoWebsite---Deploy a Hugo Website with Cloud Build and Firebase Pipeline
 
 
+* Local Variables						   :noexport:
+
 * Footnotes
 
-[fn:1]In the browser, add =index.text= to the end of the URL to see the source.
+[fn:1] https://console.firebase.google.com/
 
-[fn:2]Markdown requires the standard Perl library module Digest::MD5.
+[fn:2] mistake? should be ~config.yaml~ ??
+
+[fn:3]In the browser, add =index.text= to the end of the URL to see the source.
+
+[fn:4]Markdown requires the standard Perl library module Digest::MD5.
 
 
-* Local Variables						   :noexport:
 # Local Variables:
 # fill-column: 79
 # indent-tabs-mode: t
