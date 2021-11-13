@@ -3,8 +3,8 @@
 #+title:Build Apps & Websites with Firebase
 #+subtitle:{{{version}}} {{{date}}}
 #+author:LOLH
-#+date:2021-11-12 08:26
-#+macro:version Version 0.1.2
+#+date:2021-11-13 07:12
+#+macro:version Version 0.2.0
 #+macro:upload-date (eval (current-time-string))
 #+bucket:pinecone-forest.com
 
